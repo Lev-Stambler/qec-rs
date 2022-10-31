@@ -54,7 +54,7 @@ impl ErrorModel<HGPCode> for HGPCode {
             meas_err.sample(&mut rand::thread_rng())
         });
 
-        let syndrome_Z = self.syndrome_from_error(&bit_error, false) ^ syndrome_error;
+        let syndrome_Z = self.syndrome_from_error(&bit_error, false) ^ &syndrome_error;
 
         ErrorRound {
             bit_error,

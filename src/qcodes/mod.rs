@@ -13,6 +13,7 @@ pub trait QCode: Sized {
     fn equivalent_up_to_stabilizer(&self, e1: Self::BitError, e2: Self::BitError) -> bool;
 
     /// Get the syndrome from an error pattern
+    ///
     /// `is_X` - denotes if the syndrome is of the X type. If not, assume that we are dealing with Z type
     fn syndrome_from_error(&self, e: &Self::BitError, is_X: bool) -> Self::Syndrome;
 

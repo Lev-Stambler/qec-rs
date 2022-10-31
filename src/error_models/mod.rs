@@ -22,11 +22,11 @@ impl QubitError {
 }
 
 pub struct ErrorRound<QCodeT: QCode> {
-    bit_error: <QCodeT>::BitError,
-    syndrome_error_X: <QCodeT>::SyndromeError,
-    syndrome_error_Z: <QCodeT>::SyndromeError,
-    syndrome_X: <QCodeT>::Syndrome,
-    syndrome_Z: <QCodeT>::Syndrome,
+    pub(crate) bit_error: <QCodeT>::BitError,
+    pub(crate) syndrome_error_X: <QCodeT>::SyndromeError,
+    pub(crate) syndrome_error_Z: <QCodeT>::SyndromeError,
+    pub(crate) syndrome_X: <QCodeT>::Syndrome,
+    pub(crate) syndrome_Z: <QCodeT>::Syndrome,
 }
 
 pub struct ErrorIIDConfigs {
