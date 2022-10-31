@@ -6,6 +6,7 @@ pub trait QCode: Sized {
     type BitError;
     type SyndromeError;
     type Syndrome;
+    type SyndromeIdx;
     type Configs;
 
     fn load(serialized_path: &str) -> Self;
@@ -24,4 +25,12 @@ pub trait QCode: Sized {
         e: &Self::BitError,
         is_X: bool,
     );
+
+    /// Get the syndrome difference for a set of synds
+    /// 
+    /// Return the difference of syndrome as well as
+    fn syndrome_difference_weight(&self, 
+        synd: &Self::Syndrome,
+        e: &Self::BitError,
+        is_X: bool) -> usize;
 }

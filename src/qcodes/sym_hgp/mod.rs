@@ -1,6 +1,7 @@
 mod decoder;
 mod error_model;
 
+use gray_codes::GrayCode32;
 use serde::{Deserialize, Serialize};
 use std::{cmp::max, collections::HashSet, fmt::Error, fs};
 
@@ -24,6 +25,8 @@ pub struct HGPCode {
     m: usize,
     dc: usize,
     dv: usize,
+
+    gray_code: Vec<u32>,
 }
 
 /// Bit position within either the bit_nbhd bit_nbhd array or check_nbhd check_nbhd array
@@ -32,9 +35,9 @@ type BitPos = (usize, usize);
 
 pub struct QubitsWrapper<T> {
     // vv: Array2<T>,
-    vv_set: HashSet<(BitPos, T)>,
+    pub vv_set: HashSet<(BitPos, T)>,
     // cc: Array2<T>,
-    cc_set: HashSet<(BitPos, T)>,
+    pub cc_set: HashSet<(BitPos, T)>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -49,6 +52,8 @@ impl QCode for HGPCode {
     type SyndromeError = Array2<bool>;
 
     type Syndrome = Array2<bool>;
+
+    type SyndromeIdx = (usize, usize);
 
     type Configs = ();
 
@@ -79,6 +84,7 @@ impl QCode for HGPCode {
             n_qubits: n * n + m * m,
             m_X_syndrome_checks: n * m,
             m_Z_syndrome_checks: n * m,
+            gray_code: GrayCode32::with_bits(dc + dv).collect(),
         };
         s
     }
@@ -106,9 +112,9 @@ impl QCode for HGPCode {
                 && is_X_syndrome
                 && (err.err_type == ErrorType::Z || err.err_type == ErrorType::Y)
             {
-                //  TODO: how to???
-                // current_synd[*v1][*v2] ^= true;
-                todo!()
+                for c1 in self.bit_nbhd.row(*v1) {
+                    *(current_synd.get_mut((*c1, *v2)).unwrap()) ^= true;
+                }
             } else if err.errored
                 && !is_X_syndrome
                 && (err.err_type == ErrorType::X || err.err_type == ErrorType::Y)
@@ -123,7 +129,9 @@ impl QCode for HGPCode {
                 && is_X_syndrome
                 && (err.err_type == ErrorType::Z || err.err_type == ErrorType::Y)
             {
-                todo!()
+                for v2 in self.bit_nbhd.row(*c2) {
+                    *(current_synd.get_mut((*c1, *v2)).unwrap()) ^= true;
+                }
             } else if err.errored
                 && !is_X_syndrome
                 && (err.err_type == ErrorType::X || err.err_type == ErrorType::Y)
@@ -133,6 +141,14 @@ impl QCode for HGPCode {
                 }
             }
         }
+    }
+
+    // TODO: refactor
+    fn syndrome_difference_weight(&self, 
+        synd: &Self::Syndrome,
+        e: &Self::BitError,
+        is_X: bool) -> usize {
+        todo!()
     }
 }
 

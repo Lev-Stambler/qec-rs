@@ -1,12 +1,12 @@
 use crate::qcodes::{sym_hgp::HGPCode, QCode};
 
-#[derive(Hash, PartialEq, Eq)]
+#[derive(Hash, PartialEq, Eq, Clone)]
 pub enum ErrorType {
     X,
     Y,
     Z,
 }
-#[derive(Hash, PartialEq, Eq)]
+#[derive(Hash, PartialEq, Eq, Clone)]
 pub struct QubitError {
     pub errored: bool,
     pub err_type: ErrorType,
