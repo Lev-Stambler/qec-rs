@@ -1,17 +1,40 @@
 use crate::qcodes::{sym_hgp::HGPCode, QCode};
+
+#[derive(Hash, PartialEq, Eq)]
+pub enum ErrorType {
+    X,
+    Y,
+    Z,
+}
+#[derive(Hash, PartialEq, Eq)]
+pub struct QubitError {
+    pub errored: bool,
+    pub err_type: ErrorType,
+}
+
+impl QubitError {
+    pub(crate) fn new(err: bool, t: ErrorType) -> Self {
+        QubitError {
+            errored: err,
+            err_type: t,
+        }
+    }
+}
+
 pub struct ErrorRound<QCodeT: QCode> {
     bit_error: <QCodeT>::BitError,
-    syndrome_error: <QCodeT>::SyndromeError,
-    syndrome: <QCodeT>::Syndrome,
+    syndrome_error_X: <QCodeT>::SyndromeError,
+    syndrome_error_Z: <QCodeT>::SyndromeError,
+    syndrome_X: <QCodeT>::Syndrome,
+    syndrome_Z: <QCodeT>::Syndrome,
 }
 
 pub struct ErrorIIDConfigs {
-    bit_error_p: f32,
-    measure_error_p: f32,
+    pub bit_error_p: f64,
+    pub measure_error_p: f64,
 }
 
 pub trait ErrorModel<QCodeT: QCode> {
-    type Configs;
     /// Get back a set of errors for a quantum code
-    fn error_round(&self, configs: Self::Configs) -> ErrorRound<QCodeT>;
+    fn error_round_X_only_iid(&self, configs: ErrorIIDConfigs) -> ErrorRound<QCodeT>;
 }
